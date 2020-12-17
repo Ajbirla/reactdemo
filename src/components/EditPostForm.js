@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 
 const EditPostForm = (props) => {
   const [post, setPost] = useState(props.currentPost);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     setPost(props.currentPost);
@@ -13,26 +15,40 @@ const EditPostForm = (props) => {
     setPost({ ...post, [name]: value });
   };
 
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setSubmitted(true);
+    props.updatePost(post.id, post);
+  };
 
-        props.updatePost(post.id, post);
-      }}
-    >
-      <label>Title</label>
-      <textarea name="title" value={post.title} onChange={handleInputChange} />
-      <label>Description</label>
-      <textarea name="body" value={post.body} onChange={handleInputChange} />
-      <button>Update post</button>
-      <button
-        onClick={() => props.setEditing(false)}
-        className="button muted-button"
-      >
-        Cancel
-      </button>
-    </form>
+  return (
+    <>
+      {submitted ? (
+        <Redirect to="/posts" />
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Title</label>
+            <textarea
+              name="title"
+              value={post.title}
+              onChange={handleInputChange}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label>Description</label>
+            <textarea
+              name="body"
+              value={post.body}
+              onChange={handleInputChange}
+              className="form-control"
+            />
+          </div>
+          <button className="btn-secondary">Update post</button>
+        </form>
+      )}
+    </>
   );
 };
 
